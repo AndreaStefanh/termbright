@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.c": "c",
+        "*.h": "c",
+        "*.py": "python",
+    },
+    
+    "C_Cpp.default.cStandard": "gnu17",
+}
