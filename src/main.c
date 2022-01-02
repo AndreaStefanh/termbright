@@ -13,6 +13,7 @@
 typedef struct Args {
     bool printHelp;
     bool printVersion;
+    bool printMaxBright;
 
     bool printTheCurrentBrightness;
 
@@ -269,6 +270,7 @@ Args parseArgs(int argc, char **argv, char *maxBrightness, char *actualBrightnes
 resetLabel:
     ReturnArgs.printHelp = false;
     ReturnArgs.printVersion = false;
+    ReturnArgs.printMaxBright = false;
     ReturnArgs.printTheCurrentBrightness = false;
     ReturnArgs.directBrightnessWithoutSign = false;
     ReturnArgs.percenteBrightnessWithoutSign = false;
@@ -302,6 +304,11 @@ resetLabel:
 
         } else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--version") == 0) {
             ReturnArgs.printVersion = true;
+            ReturnArgs.intensity = malloc(0);
+            return ReturnArgs;
+
+        } else if (strcmp(argv[i], "-m") == 0 || strcmp(argv[i], "--max") == 0) {
+            ReturnArgs.printMaxBright = true;
             ReturnArgs.intensity = malloc(0);
             return ReturnArgs;
 
@@ -409,6 +416,12 @@ void printVersion()
     return;
 }
 
+void printMaxBrightness(char *maxBrightness)
+{
+    fprintf(stdout, "%s\n", maxBrightness);
+    return;
+}
+
 void printHelp()
 {
     fprintf(stdout, "TermBright v%s - Copyright © 2022 Andrea Stefan\n", VERSION);
@@ -417,7 +430,8 @@ void printHelp()
     fprintf(stdout, "usage: termbright [options]\n\n");
     fprintf(stdout, "options:\n");
     fprintf(stdout, "  -h, --help, -? |   Print this help screen in stdout\n");
-    fprintf(stdout, "  -v,  --version |   Print the version of this program in stdout\n");
+    fprintf(stdout, "  -v, --version  |   Print the version of this program in stdout\n");
+    fprintf(stdout, "  -m, --max      |   Print the max brightness (file format) in stdout\n");
     fprintf(stdout, "       +50%%      |   Add 50%% to the current brightness\n");
     fprintf(stdout, "       -50%%      |   Substract 50%% to the current brightness\n");
     fprintf(stdout, "        50%%      |   Set the brightness at 50%%\n");
@@ -446,6 +460,8 @@ int main(int argc, char *argv[])
         printHelp();
     } else if (args.printVersion == true) {
         printVersion();
+    } else if (args.printMaxBright == true) {
+        printMaxBrightness(maxBrightness);
     } else if (args.printTheCurrentBrightness == true) {
         char *perc = percentage2(actualBrightness, maxBrightness);
         fprintf(stdout, "Current brightness in file format: %s\n", actualBrightness);
