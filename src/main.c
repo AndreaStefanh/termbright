@@ -268,6 +268,81 @@ bool checkIntensity(char *intensity, char *maxBrightness, char *actualBrightness
     return true;
 }
 
+bool control(char *intensity, char *argsIntensity)
+{
+    size_t i = 0;
+    size_t len = strlen(intensity);
+
+    (void) argsIntensity;
+
+    #define NUMBERS         \
+    intensity[i] == '1' ||  \
+    intensity[i] == '2' ||  \
+    intensity[i] == '3' ||  \
+    intensity[i] == '4' ||  \
+    intensity[i] == '5' ||  \
+    intensity[i] == '6' ||  \
+    intensity[i] == '7' ||  \
+    intensity[i] == '8' ||  \
+    intensity[i] == '9' ||  \
+    intensity[i] == '0' ||  \
+    intensity[i] == '%'
+
+
+    if (len == 0)
+    {
+        fprintf(stderr, "ERROR: the length of the intensity is equal to 0\n");
+        argsIntensity = malloc(0);
+        return false;
+    }
+    
+
+    if (intensity[0] == '+' || intensity[0] == '-') {
+        
+        for (i = 1; i < len; i++)
+        {
+            if (NUMBERS) {
+
+                continue;
+
+            } else {
+                
+                fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu\n", intensity[i], i);
+                argsIntensity = malloc(0);
+                return false;
+            }
+        }
+
+        return true;
+
+    } else if (NUMBERS) {
+
+        for (i = 0; i < len; i++)
+        {
+            if (NUMBERS) {
+
+                continue;
+
+            } else {
+                
+                fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu\n", intensity[i], i);
+                argsIntensity = malloc(0);
+                return false;
+            }
+        }
+
+        return true;
+
+    } else {
+        fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu", intensity[0], i);
+        argsIntensity = malloc(0);
+        return false;
+    }
+    
+    argsIntensity = malloc(0);
+    return false;
+}
+
 Args parseArgs(int argc, char **argv, char *maxBrightness, char *actualBrightness)
 {
     Args ReturnArgs;
@@ -332,6 +407,8 @@ resetLabel:
             {
                 ReturnArgs.percenteBrightness = true;
 
+                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
+
                 char percen[len];
                 memset(percen, 0, len);
                 size_t z = 0;
@@ -341,6 +418,8 @@ resetLabel:
                 if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness) == false) { labelGotoCheck = true; goto resetLabel; }
             } else {
                 ReturnArgs.directBrightness = true;
+                
+                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
 
                 char percen[len];
                 memset(percen, 0, len);
@@ -363,6 +442,8 @@ resetLabel:
             {                
                 ReturnArgs.percenteBrightness = true;
 
+                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
+
                 char percen[len];
                 memset(percen, 0, len);
                 size_t z = 0;
@@ -372,6 +453,8 @@ resetLabel:
                 if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness) == false) { labelGotoCheck = true; goto resetLabel; }
             } else {                
                 ReturnArgs.directBrightness = true;
+                
+                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
 
                 char percen[len];
                 memset(percen, 0, len);
@@ -392,6 +475,8 @@ resetLabel:
             if (argv[i][len - 1] == '%')
             {                
                 ReturnArgs.percenteBrightnessWithoutSign = true;
+                
+                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
 
                 char percen[len];
                 memset(percen, 0, len);
@@ -403,6 +488,8 @@ resetLabel:
 
             } else {
                 ReturnArgs.directBrightnessWithoutSign = true;
+                
+                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
 
                 ReturnArgs.intensity = malloc(sizeof(char) * len);
                 isNull(ReturnArgs.intensity, "unable to allocate to memory");
