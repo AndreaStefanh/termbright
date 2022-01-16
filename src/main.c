@@ -105,20 +105,20 @@ char *grubBrightness(char *fileName)
             {
                 if (tmp->d_type == DT_REG && strcmp(tmp->d_name, fileName) == 0)
                 {
-                    char *pathMaxBright = strConcat(PATH_BRIGHTNESS, strConcat(folders->d_name, strConcat("/", fileName)));
-                    int fd = open(pathMaxBright, O_RDONLY);
+                    char *pathBright = strConcat(PATH_BRIGHTNESS, strConcat(folders->d_name, strConcat("/", fileName)));
+                    int fd = open(pathBright, O_RDONLY);
 
                     if (fd == -1)
                     {
-                        fprintf(stderr, "ERROR: unable to read file %s", pathMaxBright);
+                        fprintf(stderr, "ERROR: unable to read file %s", pathBright);
 
-                        free(pathMaxBright);
+                        free(pathBright);
                         free(tmpPath);
                         closedir(tmpDir);
                         exit(EXIT_FAILURE);
                     }
 
-                    free(pathMaxBright);
+                    free(pathBright);
                     
                     read(fd, ReturnMaxBrightness, 10);
 
@@ -163,20 +163,20 @@ void writeBright(char *intensity)
             {
                 if (tmp->d_type == DT_REG && strcmp(tmp->d_name, "brightness") == 0)
                 {
-                    char *pathMaxBright = strConcat(PATH_BRIGHTNESS, strConcat(folders->d_name, strConcat("/", "brightness")));
-                    int fd = open(pathMaxBright, O_WRONLY);
+                    char *pathBright = strConcat(PATH_BRIGHTNESS, strConcat(folders->d_name, strConcat("/", "brightness")));
+                    int fd = open(pathBright, O_WRONLY);
 
                     if (fd == -1)
                     {
-                        fprintf(stderr, "ERROR: unable to read file %s", pathMaxBright);
+                        fprintf(stderr, "ERROR: unable to read file %s", pathBright);
 
-                        free(pathMaxBright);
+                        free(pathBright);
                         free(tmpPath);
                         closedir(tmpDir);
                         exit(EXIT_FAILURE);
                     }
 
-                    free(pathMaxBright);
+                    free(pathBright);
                     
                     write(fd, intensity, 10);
 
@@ -239,33 +239,6 @@ char *percentage2(char *PercentageOfTheUser, char *maxBrightness)
     sprintf(ReturnPerC, "%zu", ReturnPer);
 
     return ReturnPerC;
-}
-
-bool checkIntensity(char *intensity, char *maxBrightness, char *actualBrightness)
-{
-    size_t intensityD = (size_t) atol(intensity);
-    size_t maxBrightnessD = (size_t) atol(maxBrightness);
-    size_t actualBrightnessD = (size_t) atol(actualBrightness);
-    
-    if (actualBrightnessD == intensityD)
-    {
-        fprintf(stderr, "INFO: you set the brightness as the current brightness\n");
-        return false;
-    }
-
-    if (intensityD == 0 || (actualBrightnessD - intensityD) <= 0)
-    {
-        fprintf(stderr, "ERROR: you can't set brightness under or 0%%\n");
-        return false;
-    }
-
-    if (intensityD > maxBrightnessD)
-    {
-        fprintf(stderr, "ERROR: you can't set brightness upper or 100%%\n");
-        return false;
-    }
-    
-    return true;
 }
 
 bool control(char *intensity, char *argsIntensity)
@@ -341,6 +314,33 @@ bool control(char *intensity, char *argsIntensity)
     
     argsIntensity = malloc(0);
     return false;
+}
+
+bool checkIntensity(char *intensity, char *maxBrightness, char *actualBrightness)
+{
+    size_t intensityD = (size_t) atol(intensity);
+    size_t maxBrightnessD = (size_t) atol(maxBrightness);
+    size_t actualBrightnessD = (size_t) atol(actualBrightness);
+    
+    if (actualBrightnessD == intensityD)
+    {
+        fprintf(stderr, "INFO: you set the brightness as the current brightness\n");
+        return false;
+    }
+
+    if (intensityD == 0 || (actualBrightnessD - intensityD) <= 0)
+    {
+        fprintf(stderr, "ERROR: you can't set brightness under or 0%%\n");
+        return false;
+    }
+
+    if (intensityD > maxBrightnessD)
+    {
+        fprintf(stderr, "ERROR: you can't set brightness upper or 100%%\n");
+        return false;
+    }
+    
+    return true;
 }
 
 Args parseArgs(int argc, char **argv, char *maxBrightness, char *actualBrightness)
