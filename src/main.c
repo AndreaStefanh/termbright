@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
+#include <assert.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
@@ -211,8 +212,7 @@ char *percentage(char *PercentageOfTheUser, char *maxBrightness, char *actualBri
     } else if (sum == true && (withoutSign == false && add == false)) {
         ReturnPer = actualBrightnessD - ReturnPer;
     } else {
-        fprintf(stderr, "WTF!\n");
-        exit(EXIT_FAILURE);
+        assert(0 && "unreachable");
     }
     
     
