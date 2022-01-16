@@ -247,6 +247,11 @@ bool checkIntensity(char *intensity, char *maxBrightness, char *actualBrightness
     size_t maxBrightnessD = (size_t) atol(maxBrightness);
     size_t actualBrightnessD = (size_t) atol(actualBrightness);
     
+    if (actualBrightnessD == intensityD)
+    {
+        fprintf(stderr, "INFO: you set the brightness as the current brightness\n");
+        return false;
+    }
 
     if (intensityD == 0 || (actualBrightnessD - intensityD) <= 0)
     {
