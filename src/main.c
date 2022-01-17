@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
@@ -33,17 +34,30 @@ void isNull(void *check, char *error)
 {
     if (check == NULL)
     {
-        fprintf(stderr, "Error: %s", error);
+        fprintf(stderr, "Error: %s\n", error);
         exit(EXIT_FAILURE);
     }
 
     return;
 }
 
+char *errorMessageC(char *errorMessage, int errorCode)
+{
+    char *errnoMessage = strerror(errorCode);
+
+    size_t len = strlen(errorMessage);
+    char result[len];
+
+    for (size_t i = 0; i <= len; i++) result[i] = errorMessage[i];
+    strcat(result, errnoMessage);
+
+    return result;
+}
+
 void *xmalloc(size_t len)
 {
     void *ReturnValue = malloc(len);
-    isNull(ReturnValue, "unable to allocate to memory");
+    isNull(ReturnValue, errorMessageC("unable to allocate to memory: ", errno) );
 
     return ReturnValue;
 }
@@ -87,25 +101,28 @@ void checkRoot()
 char *grubBrightness(char *fileName)
 {
     DIR *dir = opendir(PATH_BRIGHTNESS);
-    isNull(dir, "unable to open \""PATH_BRIGHTNESS"\"");
+    isNull(dir, errorMessageC("unable to open '"PATH_BRIGHTNESS"': ", errno));
 
     char *ReturnMaxBrightness = xmalloc(sizeof(char) * 11);
     memset(ReturnMaxBrightness, 0, 11);
 
 
     struct dirent *folders = readdir(dir);
+    isNull(folders, errorMessageC("unable to read in '"PATH_BRIGHTNESS"': ", errno));
 
     while (folders != NULL)
     {
         if (folders->d_type == DT_LNK)
         {
             char *tmpPath = strConcat(PATH_BRIGHTNESS, folders->d_name);
+            char *tmpError = strConcat("unable to open '", strConcat( strConcat(PATH_BRIGHTNESS, folders->d_name), "': "));
             
             DIR *tmpDir = opendir(tmpPath);
-            isNull(dir, "unable to open \""PATH_BRIGHTNESS"");
+            isNull(dir, errorMessageC(tmpError, errno));
             
 
             struct dirent *tmp = readdir(tmpDir);
+            isNull(folders, errorMessageC(tmpError, errno));
 
             while (tmp != NULL)
             {
@@ -116,17 +133,29 @@ char *grubBrightness(char *fileName)
 
                     if (fd == -1)
                     {
-                        fprintf(stderr, "ERROR: unable to read file %s", pathBright);
+                        fprintf(stderr, "ERROR: unable to read file %s: %s", pathBright, strerror(errno));
 
                         free(pathBright);
                         free(tmpPath);
+                        free(tmpError);
                         closedir(tmpDir);
                         exit(EXIT_FAILURE);
                     }
 
                     free(pathBright);
                     
-                    read(fd, ReturnMaxBrightness, 10);
+                    ssize_t errorRead = read(fd, ReturnMaxBrightness, 10);
+
+                    if (errorRead == -1)
+                    {
+                        fprintf(stderr, "ERROR: unable to read file %s: %s", pathBright, strerror(errno));
+
+                        free(tmpPath);
+                        free(tmpError);
+                        closedir(tmpDir);
+                        closedir(dir);
+                        exit(EXIT_FAILURE);
+                    }
 
                     close(fd);
                 }
@@ -135,6 +164,7 @@ char *grubBrightness(char *fileName)
             }
 
             free(tmpPath);
+            free(tmpError);
             closedir(tmpDir);
         }
 
@@ -148,22 +178,24 @@ char *grubBrightness(char *fileName)
 void writeBright(char *intensity)
 {
     DIR *dir = opendir(PATH_BRIGHTNESS);
-    isNull(dir, "unable to open \""PATH_BRIGHTNESS"\"");
-
+    isNull(dir, errorMessageC("unable to open '"PATH_BRIGHTNESS"': ", errno));
 
     struct dirent *folders = readdir(dir);
+    isNull(folders, errorMessageC("unable to read in '"PATH_BRIGHTNESS"': ", errno));
 
     while (folders != NULL)
     {
         if (folders->d_type == DT_LNK)
         {
             char *tmpPath = strConcat(PATH_BRIGHTNESS, folders->d_name);
+            char *tmpError = strConcat("unable to open '", strConcat( strConcat(PATH_BRIGHTNESS, folders->d_name), "': "));
             
             DIR *tmpDir = opendir(tmpPath);
-            isNull(dir, "unable to open \""PATH_BRIGHTNESS"");
+            isNull(dir, errorMessageC(tmpError, errno));
             
 
             struct dirent *tmp = readdir(tmpDir);
+            isNull(dir, errorMessageC(tmpError, errno));
 
             while (tmp != NULL)
             {
@@ -174,17 +206,29 @@ void writeBright(char *intensity)
 
                     if (fd == -1)
                     {
-                        fprintf(stderr, "ERROR: unable to read file %s", pathBright);
+                        fprintf(stderr, "ERROR: unable to read file %s: %s", pathBright, strerror(errno));
 
                         free(pathBright);
                         free(tmpPath);
+                        free(tmpError);
                         closedir(tmpDir);
                         exit(EXIT_FAILURE);
                     }
 
                     free(pathBright);
                     
-                    write(fd, intensity, 10);
+                    ssize_t errorWrite = write(fd, intensity, 10);
+
+                    if (errorWrite == -1)
+                    {
+                        fprintf(stderr, "ERROR: unable to write the file %s: %s", pathBright, strerror(errno));
+
+                        free(tmpPath);
+                        free(tmpError);
+                        closedir(tmpDir);
+                        closedir(dir);
+                        exit(EXIT_FAILURE);
+                    }
 
                     close(fd);
                 }
@@ -193,6 +237,7 @@ void writeBright(char *intensity)
             }
 
             free(tmpPath);
+            free(tmpError);
             closedir(tmpDir);
         }
 
