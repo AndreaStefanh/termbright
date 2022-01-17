@@ -40,14 +40,21 @@ void isNull(void *check, char *error)
     return;
 }
 
+void *xmalloc(size_t len)
+{
+    void *ReturnValue = malloc(len);
+    isNull(ReturnValue, "unable to allocate to memory");
+
+    return ReturnValue;
+}
+
 char *strConcat(char *src1, char *src2)
 {
     size_t len1 = strlen(src1);
     size_t len2 = strlen(src2);
     size_t i = 0;
 
-    char *str = malloc(sizeof(char) * ((len1 + len2) + 1));
-    isNull(str, "unable to allocate to memory");
+    char *str = xmalloc(sizeof(char) * ((len1 + len2) + 1));
 
 
     for (size_t j = 0; j <= len1; ++j, ++i) str[i] = (char) src1[j];
@@ -82,8 +89,7 @@ char *grubBrightness(char *fileName)
     DIR *dir = opendir(PATH_BRIGHTNESS);
     isNull(dir, "unable to open \""PATH_BRIGHTNESS"\"");
 
-    char *ReturnMaxBrightness = malloc(sizeof(char) * 11);
-    isNull(ReturnMaxBrightness, "unable to allocate to memory");
+    char *ReturnMaxBrightness = xmalloc(sizeof(char) * 11);
     memset(ReturnMaxBrightness, 0, 11);
 
 
@@ -216,8 +222,7 @@ char *percentage(char *PercentageOfTheUser, char *maxBrightness, char *actualBri
     }
     
     
-    char *ReturnPerC = malloc(sizeof(char) * 11);
-    isNull(ReturnPerC, "unable to allocate to memory");
+    char *ReturnPerC = xmalloc(sizeof(char) * 11);
     memset(ReturnPerC, 0, 11);
     
     sprintf(ReturnPerC, "%zu", ReturnPer);
@@ -232,8 +237,7 @@ char *percentage2(char *PercentageOfTheUser, char *maxBrightness)
 
     size_t ReturnPer = ((100 * PercentageOfTheUserD) / maxBrightnessD);
 
-    char *ReturnPerC = malloc(sizeof(char) * 11);
-    isNull(ReturnPerC, "unable to allocate to memory");
+    char *ReturnPerC = xmalloc(sizeof(char) * 11);
     memset(ReturnPerC, 0, 11);
     
     sprintf(ReturnPerC, "%zu", ReturnPer);
@@ -265,7 +269,7 @@ bool control(char *intensity, char *argsIntensity)
     if (len == 0)
     {
         fprintf(stderr, "ERROR: the length of the intensity is equal to 0\n");
-        argsIntensity = malloc(0);
+        argsIntensity = xmalloc(0);
         return false;
     }
     
@@ -281,7 +285,7 @@ bool control(char *intensity, char *argsIntensity)
             } else {
                 
                 fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu\n", intensity[i], i);
-                argsIntensity = malloc(0);
+                argsIntensity = xmalloc(0);
                 return false;
             }
         }
@@ -299,7 +303,7 @@ bool control(char *intensity, char *argsIntensity)
             } else {
                 
                 fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu\n", intensity[i], i);
-                argsIntensity = malloc(0);
+                argsIntensity = xmalloc(0);
                 return false;
             }
         }
@@ -308,11 +312,11 @@ bool control(char *intensity, char *argsIntensity)
 
     } else {
         fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu", intensity[0], i);
-        argsIntensity = malloc(0);
+        argsIntensity = xmalloc(0);
         return false;
     }
     
-    argsIntensity = malloc(0);
+    argsIntensity = xmalloc(0);
     return false;
 }
 
@@ -365,7 +369,7 @@ resetLabel:
     if (argc == 1) 
     {
         ReturnArgs.printTheCurrentBrightness = true;
-        ReturnArgs.intensity = malloc(0);
+        ReturnArgs.intensity = xmalloc(0);
         return ReturnArgs;
     }
 
@@ -381,22 +385,22 @@ resetLabel:
     {
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-?") == 0) {
             ReturnArgs.printHelp = true;
-            ReturnArgs.intensity = malloc(0);
+            ReturnArgs.intensity = xmalloc(0);
             return ReturnArgs;
 
         } else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--version") == 0) {
             ReturnArgs.printVersion = true;
-            ReturnArgs.intensity = malloc(0);
+            ReturnArgs.intensity = xmalloc(0);
             return ReturnArgs;
 
         } else if (strcmp(argv[i], "-m") == 0 || strcmp(argv[i], "--max") == 0) {
             ReturnArgs.printMaxBright = true;
-            ReturnArgs.intensity = malloc(0);
+            ReturnArgs.intensity = xmalloc(0);
             return ReturnArgs;
         
         } else if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--current") == 0) {
             ReturnArgs.printCurrentBright = true;
-            ReturnArgs.intensity = malloc(0);
+            ReturnArgs.intensity = xmalloc(0);
             return ReturnArgs;
 
         } else if (argv[i][0] == '+') {
@@ -426,8 +430,7 @@ resetLabel:
                 size_t z = 0;
                 for (size_t j = 1; j <= len; ++j, ++z) percen[z] = argv[i][j];
 
-                ReturnArgs.intensity = malloc(sizeof(char) * 11);
-                isNull(ReturnArgs.intensity, "unable to allocate to memory");
+                ReturnArgs.intensity = xmalloc(sizeof(char) * 11);
                 memset(ReturnArgs.intensity, 0, 11);
 
                 sprintf(ReturnArgs.intensity, "%ld", (atol(actualBrightness) + atol(percen)));
@@ -461,8 +464,7 @@ resetLabel:
                 size_t z = 0;
                 for (size_t j = 1; j <= len; ++j, ++z) percen[z] = argv[i][j];
 
-                ReturnArgs.intensity = malloc(sizeof(char) * 11);
-                isNull(ReturnArgs.intensity, "unable to allocate to memory");
+                ReturnArgs.intensity = xmalloc(sizeof(char) * 11);
                 memset(ReturnArgs.intensity, 0, 11);
                 sprintf(ReturnArgs.intensity, "%ld", (atol(actualBrightness) - atol(percen)));
                 if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness) == false) { labelGotoCheck = true; goto resetLabel; }
@@ -491,8 +493,7 @@ resetLabel:
                 
                 if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
 
-                ReturnArgs.intensity = malloc(sizeof(char) * len);
-                isNull(ReturnArgs.intensity, "unable to allocate to memory");
+                ReturnArgs.intensity = xmalloc(sizeof(char) * len);
                 memset(ReturnArgs.intensity, 0, len);
 
                 for (size_t j = 0; j <= len; j++) ReturnArgs.intensity[j] = argv[i][j];
