@@ -86,7 +86,7 @@ void removeNewLine(char *str)
     return;
 }
 
-void checkRoot()
+void checkRoot(void)
 {
     if (getuid()) 
     {
@@ -563,7 +563,7 @@ void printTheCurrentBrightness(char *actualBrightness, char *maxBrightness)
     return;
 }
 
-void printVersion()
+void printVersion(void)
 {
     fprintf(stdout, "%s\n", VERSION);
     return;
@@ -581,7 +581,7 @@ void printCurrentBrightness(char *currentBrightness)
     return;
 }
 
-void printHelp()
+void printHelp(void)
 {
     fprintf(stdout, "TermBright v%s - Copyright © 2022 Andrea Stefan\n", VERSION);
     fprintf(stdout, "License GPLv3: GNU GPL version 3 <https://gnu.org/licenses/gpl.html>\n");
