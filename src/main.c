@@ -418,8 +418,9 @@ resetLabel:
         return ReturnArgs;
     }
 
-    if (argc >= 3)
+    if (argc >= (2 + MAX_ARGS))
     {
+        ReturnArgs.intensity = xmalloc(0);
         fprintf(stderr, "ERROR: you pass %d arguments\n", argc);
         fprintf(stderr, "Max arguments %d\n", MAX_ARGS);
         return ReturnArgs;
