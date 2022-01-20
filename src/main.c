@@ -34,7 +34,7 @@ void isNull(void *check, char *error)
 {
     if (check == NULL)
     {
-        fprintf(stderr, "Error: %s\n", error);
+        if (error != NULL) fprintf(stderr, "Error: %s\n", error);
         exit(EXIT_FAILURE);
     }
 
