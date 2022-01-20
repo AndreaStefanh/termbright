@@ -41,6 +41,14 @@ void isNull(void *check, char *error)
     return;
 }
 
+#if defined __GNUC__ && !defined __clang__
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wreturn-local-addr"
+#elif __clang__
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wreturn-stack-address"
+#endif
+
 char *errorMessageC(char *errorMessage, int errorCode)
 {
     char *errnoMessage = strerror(errorCode);
@@ -53,6 +61,12 @@ char *errorMessageC(char *errorMessage, int errorCode)
 
     return result;
 }
+
+#if defined __GNUC__ && !defined __clang__
+#  pragma GCC diagnostic pop
+#elif __clang__
+#  pragma clang diagnostic pop
+#endif
 
 void *xmalloc(size_t len)
 {
