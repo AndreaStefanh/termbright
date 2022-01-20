@@ -118,8 +118,8 @@ char *grubBrightness(char *fileName)
     DIR *dir = opendir(PATH_BRIGHTNESS);
     isNull(dir, errorMessageC("unable to open '"PATH_BRIGHTNESS"': ", errno));
 
-    char *ReturnMaxBrightness = xmalloc(sizeof(char) * 11);
-    memset(ReturnMaxBrightness, 0, 11);
+    char *ReturnMaxBrightness = xmalloc(sizeof(char) * 100);
+    memset(ReturnMaxBrightness, 0, 100);
 
 
     struct dirent *folders = readdir(dir);
@@ -282,8 +282,8 @@ char *percentage(char *PercentageOfTheUser, char *maxBrightness, char *actualBri
     }
     
     
-    char *ReturnPerC = xmalloc(sizeof(char) * 11);
-    memset(ReturnPerC, 0, 11);
+    char *ReturnPerC = xmalloc(sizeof(char) * 100);
+    memset(ReturnPerC, 0, 100);
     
     sprintf(ReturnPerC, "%zu", ReturnPer);
 
@@ -297,8 +297,8 @@ char *percentage2(char *PercentageOfTheUser, char *maxBrightness)
 
     size_t ReturnPer = ((100 * PercentageOfTheUserD) / maxBrightnessD);
 
-    char *ReturnPerC = xmalloc(sizeof(char) * 11);
-    memset(ReturnPerC, 0, 11);
+    char *ReturnPerC = xmalloc(sizeof(char) * 100);
+    memset(ReturnPerC, 0, 100);
     
     sprintf(ReturnPerC, "%zu", ReturnPer);
 
@@ -491,8 +491,8 @@ resetLabel:
                 size_t z = 0;
                 for (size_t j = 1; j <= len; ++j, ++z) percen[z] = argv[i][j];
 
-                ReturnArgs.intensity = xmalloc(sizeof(char) * 11);
-                memset(ReturnArgs.intensity, 0, 11);
+                ReturnArgs.intensity = xmalloc(sizeof(char) * 100);
+                memset(ReturnArgs.intensity, 0, 100);
 
                 sprintf(ReturnArgs.intensity, "%ld", (atol(actualBrightness) + atol(percen)));
                 if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness) == false) { labelGotoCheck = true; goto resetLabel; }
@@ -525,8 +525,8 @@ resetLabel:
                 size_t z = 0;
                 for (size_t j = 1; j <= len; ++j, ++z) percen[z] = argv[i][j];
 
-                ReturnArgs.intensity = xmalloc(sizeof(char) * 11);
-                memset(ReturnArgs.intensity, 0, 11);
+                ReturnArgs.intensity = xmalloc(sizeof(char) * 100);
+                memset(ReturnArgs.intensity, 0, 100);
                 sprintf(ReturnArgs.intensity, "%ld", (atol(actualBrightness) - atol(percen)));
                 if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness) == false) { labelGotoCheck = true; goto resetLabel; }
             }
