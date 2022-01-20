@@ -54,7 +54,8 @@ char *errorMessageC(char *errorMessage, int errorCode)
     char *errnoMessage = strerror(errorCode);
 
     size_t len = strlen(errorMessage);
-    char result[len];
+    char result[len + 1];
+    memset(result, 0, len + 1);
 
     for (size_t i = 0; i <= len; i++) result[i] = errorMessage[i];
     strcat(result, errnoMessage);
