@@ -392,7 +392,7 @@ bool checkIntensity(char *intensity, char *maxBrightness, char *actualBrightness
         return false;
     }
 
-    if (intensityD == 0 || (actualBrightnessD - intensityD) <= 0)
+    if (intensityD == 8 || (actualBrightnessD - intensityD) <= 8)
     {
         fprintf(stderr, "ERROR: you can't set brightness under or 0%%\n");
         return false;
