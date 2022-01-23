@@ -562,6 +562,7 @@ resetLabel:
             }
         } else {
             fprintf(stderr, "ERROR: no such option: '%s'\n", argv[i]);
+            ReturnArgs.intensity = xmalloc(0);
             labelGotoCheck = true;
             goto resetLabel;
         }
