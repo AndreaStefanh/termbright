@@ -305,12 +305,12 @@ char *percentage2(char *PercentageOfTheUser, char *maxBrightness)
     return ReturnPerC;
 }
 
-bool control(char *intensity, char *argsIntensity)
+bool control(char *intensity, Args *args)
 {
     size_t i = 0;
     size_t len = strlen(intensity);
 
-    (void) argsIntensity;
+    (void) args;
 
     #define NUMBERS         \
     intensity[i] == '1' ||  \
@@ -322,21 +322,55 @@ bool control(char *intensity, char *argsIntensity)
     intensity[i] == '7' ||  \
     intensity[i] == '8' ||  \
     intensity[i] == '9' ||  \
-    intensity[i] == '0' ||  \
-    intensity[i] == '%'
+    intensity[i] == '0'
 
 
     if (len == 0)
     {
         fprintf(stderr, "ERROR: the length of the intensity is equal to 0\n");
-        argsIntensity = xmalloc(0);
+        args->intensity = xmalloc(0);
         return false;
     }
+
+    if (NUMBERS || intensity[i] == '+' || intensity[i] == '-')
+    {
+        i = len - 1;
+
+        if (NUMBERS || intensity[len - 1] == '%')
+        {
+            i = 1;
+
+            for (; i < len - 1; i++)
+            {
+                if (NUMBERS) {
+
+                    continue;
+
+                } else {
+                    fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu\n", intensity[i], i);
+                    args->intensity = xmalloc(0);
+                    return false;
+                }
+            }
+            
+        } else {
+            fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu\n", intensity[i], i);
+            args->intensity = xmalloc(0);
+            return false;
+        }
+        
+    } else {
+        fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu\n", intensity[i], i);
+        args->intensity = xmalloc(0);
+        return false;
+    }
+    
+    i = 0;
     
 
     if (intensity[0] == '+' || intensity[0] == '-') {
         
-        for (i = 1; i < len; i++)
+        for (i = 1; i < len - 1; i++)
         {
             if (NUMBERS) {
 
@@ -345,7 +379,7 @@ bool control(char *intensity, char *argsIntensity)
             } else {
                 
                 fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu\n", intensity[i], i);
-                argsIntensity = xmalloc(0);
+                args->intensity = xmalloc(0);
                 return false;
             }
         }
@@ -354,7 +388,7 @@ bool control(char *intensity, char *argsIntensity)
 
     } else if (NUMBERS) {
 
-        for (i = 0; i < len; i++)
+        for (i = 0; i < len - 1; i++)
         {
             if (NUMBERS) {
 
@@ -363,7 +397,7 @@ bool control(char *intensity, char *argsIntensity)
             } else {
                 
                 fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu\n", intensity[i], i);
-                argsIntensity = xmalloc(0);
+                args->intensity = xmalloc(0);
                 return false;
             }
         }
@@ -372,11 +406,11 @@ bool control(char *intensity, char *argsIntensity)
 
     } else {
         fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu", intensity[0], i);
-        argsIntensity = xmalloc(0);
+        args->intensity = xmalloc(0);
         return false;
     }
     
-    argsIntensity = xmalloc(0);
+    args->intensity = xmalloc(0);
     return false;
 }
 
@@ -472,7 +506,7 @@ resetLabel:
             {
                 ReturnArgs.percenteBrightness = true;
 
-                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (control(argv[i], &(ReturnArgs)) == false) { labelGotoCheck = true; goto resetLabel; }
 
                 char percen[len];
                 memset(percen, 0, len);
@@ -484,7 +518,7 @@ resetLabel:
             } else {
                 ReturnArgs.directBrightness = true;
                 
-                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (control(argv[i], &(ReturnArgs)) == false) { labelGotoCheck = true; goto resetLabel; }
 
                 char percen[len];
                 memset(percen, 0, len);
@@ -506,7 +540,7 @@ resetLabel:
             {                
                 ReturnArgs.percenteBrightness = true;
 
-                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (control(argv[i], &(ReturnArgs)) == false) { labelGotoCheck = true; goto resetLabel; }
 
                 char percen[len];
                 memset(percen, 0, len);
@@ -518,7 +552,7 @@ resetLabel:
             } else {                
                 ReturnArgs.directBrightness = true;
                 
-                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (control(argv[i], &(ReturnArgs)) == false) { labelGotoCheck = true; goto resetLabel; }
 
                 char percen[len];
                 memset(percen, 0, len);
@@ -539,7 +573,7 @@ resetLabel:
             {                
                 ReturnArgs.percenteBrightnessWithoutSign = true;
                 
-                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (control(argv[i], &(ReturnArgs)) == false) { labelGotoCheck = true; goto resetLabel; }
 
                 char percen[len];
                 memset(percen, 0, len);
@@ -552,7 +586,7 @@ resetLabel:
             } else {
                 ReturnArgs.directBrightnessWithoutSign = true;
                 
-                if (control(argv[i], ReturnArgs.intensity) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (control(argv[i], &(ReturnArgs)) == false) { labelGotoCheck = true; goto resetLabel; }
 
                 ReturnArgs.intensity = xmalloc(sizeof(char) * len);
                 memset(ReturnArgs.intensity, 0, len);
