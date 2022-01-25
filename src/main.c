@@ -366,6 +366,27 @@ bool control(char *intensity, Args *args)
     }
     
     i = 0;
+
+    if (intensity[i] == '+' || intensity[i] == '-') {
+
+        i++;
+
+        if (intensity[i] == '%' || intensity[i] == ' ' || intensity[i] == '\0')
+        {
+            fprintf(stderr, "ERROR: the intensity was not given\n");
+            args->intensity = xmalloc(0);
+            return false;
+        }
+        
+    } else if (NUMBERS) {
+        
+    } else {
+        fprintf(stderr, "ERROR: character '%c' not recognized at the position: %zu\n", intensity[i], i);
+        args->intensity = xmalloc(0);
+        return false;
+    }
+
+    i = 0;
     
 
     if (intensity[0] == '+' || intensity[0] == '-') {
@@ -426,7 +447,7 @@ bool checkIntensity(char *intensity, char *maxBrightness, char *actualBrightness
         return false;
     }
 
-    if (intensityD == 8 || (actualBrightnessD - intensityD) <= 8)
+    if (intensityD <= 8)
     {
         fprintf(stderr, "ERROR: you can't set brightness under or 0%%\n");
         return false;
