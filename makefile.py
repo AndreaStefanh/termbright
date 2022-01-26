@@ -11,7 +11,7 @@ DEBUG = False
 CC = "gcc"
 
 if DEBUG == True:
-    CFLAGS = "-x c -std=gnu18 -c -O0 -I include -Wall -Wextra -pedantic -ggdb"
+    CFLAGS = "-x c -std=gnu18 -c -O2 -I include -Wall -Wextra -pedantic -ggdb"
 else:
     CFLAGS = "-x c -std=gnu18 -c -O2 -I include -Wall -Wextra -pedantic -s"
 
