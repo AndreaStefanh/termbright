@@ -37,6 +37,17 @@ def createDir() -> None:
     
     return
 
+def frArgs() -> None:
+
+    if len(sys.argv) == 1:
+        return
+    
+    for i in range(0, len(sys.argv)):
+
+        if sys.argv[i] == "-c" or sys.argv[i] == "--capabilities":
+            global CFLAGS
+            CFLAGS = CFLAGS + " -DROOT_CHECK"
+
 def src2obj() -> None:
 
     for i in range(0, len(SRC)):
@@ -54,42 +65,62 @@ def obj2bin() -> None:
 
 def args() -> None:
 
+    installMode = False
+
     if len(sys.argv) == 1:
         return
-
-    if sys.argv[1] == "-r" or sys.argv[1] == "--run":
-
-        buffer = "sudo bin/termbright "
-
-        for i in range(2, len(sys.argv)):
-            buffer = buffer + sys.argv[i]
-        
-        print(buffer + "\n------------------")
-        os.system(buffer)
     
-    elif sys.argv[1] == "install":
+    for i in range(0, len(sys.argv)):
 
-        if os.getuid() != 0:
-            print("[!] For this operation need root permition")
-            exit(1)
+        if sys.argv[i] == "-r" or sys.argv[i] == "--run":
+
+            buffer = "sudo bin/termbright "
+
+            for i in range(2, len(sys.argv)):
+                buffer = buffer + sys.argv[i]
+            
+            print(buffer + "\n------------------")
+            os.system(buffer)
         
-        print("sudo cp bin/termbright", "/usr/bin/termbright")
-        shutil.copyfile("bin/termbright", "/usr/bin/termbright")
+        elif sys.argv[i] == "install":
 
-        print("sudo chmod 555 /usr/bin/termbright")
-        os.chmod(
-            "/usr/bin/termbright",
-            stat.S_IXUSR |
-            stat.S_IXGRP |
-            stat.S_IXOTH |
-            stat.S_IRUSR |
-            stat.S_IRGRP |
-            stat.S_IROTH
-        )
+            if os.getuid() != 0:
+                print("[!] For this operation need root permition")
+                exit(1)
+            
+            installMode = True
+            
+            print("sudo cp bin/termbright", "/usr/bin/termbright")
+            shutil.copyfile("bin/termbright", "/usr/bin/termbright")
+
+            print("sudo chmod 555 /usr/bin/termbright")
+            os.chmod(
+                "/usr/bin/termbright",
+                stat.S_IXUSR |
+                stat.S_IXGRP |
+                stat.S_IXOTH |
+                stat.S_IRUSR |
+                stat.S_IRGRP |
+                stat.S_IROTH
+            )
+        
+        elif sys.argv[i] == "-c" or sys.argv[i] == "--capabilities":
+
+            if os.getuid() != 0:
+                print("[!] For this operation need root permition")
+                exit(1)
+        
+            if installMode == True:
+                print("sudo setcap CAP_DAC_OVERRIDE=ep /usr/bin/termbright")
+                os.system("sudo setcap CAP_DAC_OVERRIDE=ep /usr/bin/termbright")
+            else:
+                print("sudo setcap CAP_DAC_OVERRIDE=ep bin/termbright")
+                os.system("sudo setcap CAP_DAC_OVERRIDE=ep bin/termbright")
 
 
 def main() -> None:
     createDir()
+    frArgs()
     src2obj()
     obj2bin()
     args()

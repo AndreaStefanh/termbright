@@ -103,11 +103,15 @@ void removeNewLine(char *str)
 
 void checkRoot(void)
 {
+    #ifndef ROOT_CHECK
+
     if (getuid()) 
     {
         fprintf(stderr, "ERROR: this application needs root permissions\n");
         exit(EXIT_FAILURE);
     }
+    
+    #endif
 
     return;
 }
