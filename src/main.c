@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include <pthread.h>
 
 #include "macros.h"
 
@@ -117,7 +118,7 @@ void checkRoot(void)
 }
 
 
-char *grubBrightness(char *fileName)
+void *grubBrightness(void *fileName)
 {
     DIR *dir = opendir(PATH_BRIGHTNESS);
     isNull(dir, errorMessageC("unable to open '"PATH_BRIGHTNESS"': ", errno));
@@ -683,8 +684,16 @@ int main(int argc, char *argv[])
 {
     checkRoot();
 
-    char *maxBrightness = grubBrightness("max_brightness");
-    char *actualBrightness = grubBrightness("actual_brightness");
+    char *maxBrightness;
+    char *actualBrightness;
+    pthread_t maxBrightnessT;
+    pthread_t actualBrightnessT;
+
+    pthread_create(&maxBrightnessT, NULL, grubBrightness, "max_brightness");
+    pthread_create(&actualBrightnessT, NULL, grubBrightness, "actual_brightness");
+    pthread_join(maxBrightnessT, (void *) &maxBrightness);
+    pthread_join(actualBrightnessT, (void *) &actualBrightness);
+
     removeNewLine(maxBrightness);
     removeNewLine(actualBrightness);
 

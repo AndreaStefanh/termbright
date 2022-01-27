@@ -11,9 +11,12 @@ DEBUG = False
 CC = "gcc"
 
 if DEBUG == True:
-    CFLAGS = "-x c -std=gnu18 -c -O2 -I include -Wall -Wextra -pedantic -ggdb"
+    CFLAGS = "-x c -std=gnu18 -c -O2 -I include -Wall -Wextra -pedantic -ggdb -D_REENTRANT"
 else:
-    CFLAGS = "-x c -std=gnu18 -c -O2 -I include -Wall -Wextra -pedantic -s"
+    CFLAGS = "-x c -std=gnu18 -c -O2 -I include -Wall -Wextra -pedantic -s -D_REENTRANT"
+
+LIBS = "-lpthread"
+
 
 SRC = [
     "src/main.c",
@@ -51,16 +54,16 @@ def frArgs() -> None:
 def src2obj() -> None:
 
     for i in range(0, len(SRC)):
-        print(f"{CC} {CFLAGS} {SRC[i]} -o {OBJ[i]}")
-        os.system(f"{CC} {CFLAGS} {SRC[i]} -o {OBJ[i]}")
+        print(f"{CC} {CFLAGS} {LIBS} {SRC[i]} -o {OBJ[i]}")
+        os.system(f"{CC} {CFLAGS} {LIBS} {SRC[i]} -o {OBJ[i]}")
     
     return
 
 def obj2bin() -> None:
 
     obj = " ".join(OBJ)
-    print(f"{CC} {obj} -o bin/termbright")
-    os.system(f"{CC} {obj} -o bin/termbright")
+    print(f"{CC} {LIBS} {obj} -o bin/termbright")
+    os.system(f"{CC} {LIBS} {obj} -o bin/termbright")
     return
 
 def args() -> None:
