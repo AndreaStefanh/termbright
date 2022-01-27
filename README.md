@@ -6,32 +6,50 @@ Termbright is a program that changes the brightness of the screen in a simple wa
 
 set brightness at 50%
 ```sh
-sudo termbright 50%
+$ termbright 50%
 ```
 
 adds 10% brightness to current brightness
 ```sh
-sudo termbright +10%
+$ termbright +10%
 ```
 
 removes 10% brightness at current brightness
 ```sh
-sudo termbright +10%
+$ termbright +10%
 ```
 
 ## Compile
 
+### Without capabilities (requires root permissions to run the program)
+
 for compile and put the binary in ./bin/termbright
 ```sh
-chmod +x makefile.py
-./makefile.py
+$ chmod +x makefile.py
+$ ./makefile.py
 ```
 
 for compile and put the binary in /usr/bin/termbright
 ```sh
-chmod +x makefile.py
-sudo ./makefile.py install
+$ chmod +x makefile.py
+$ sudo ./makefile.py install
 ```
 
-## Credit
+### With capabilities (does not require root permissions to run the program)
+
+for compile and put the binary in ./bin/termbright
+```sh
+$ chmod +x makefile.py
+$ ./makefile.py -c
+```
+
+for compile and put the binary in /usr/bin/termbright
+```sh
+$ chmod +x makefile.py
+$ sudo ./makefile.py install -c
+```
+
+## Credits
 [the location of the folder where the brightness files are located](https://askubuntu.com/a/56168)
+
+[list of capabilities in linux](https://man7.org/linux/man-pages/man7/capabilities.7.html)
