@@ -279,7 +279,7 @@ char *percentage(char *PercentageOfTheUser, char *maxBrightness, char *actualBri
     size_t ReturnPer = ((PercentageOfTheUserD * maxBrightnessD) / 100);
 
     if (withoutSign == true && (add == false && sum == false)) {
-        ReturnPer = ReturnPer;
+        //ReturnPer = ReturnPer;
     } else if (add == true && (withoutSign == false && sum == false)) {
         ReturnPer = actualBrightnessD + ReturnPer;
     } else if (sum == true && (withoutSign == false && add == false)) {
