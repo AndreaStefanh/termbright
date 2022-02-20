@@ -27,6 +27,8 @@ typedef struct Args {
     bool directBrightnessWithoutSign;
     bool percenteBrightnessWithoutSign;
 
+    bool force;
+
     char *intensity;
 } Args;
 
@@ -440,7 +442,7 @@ bool control(char *intensity, Args *args)
     return false;
 }
 
-bool checkIntensity(char *intensity, char *maxBrightness, char *actualBrightness)
+bool checkIntensity(char *intensity, char *maxBrightness, char *actualBrightness, bool force)
 {
     size_t intensityD = (size_t) atol(intensity);
     size_t maxBrightnessD = (size_t) atol(maxBrightness);
@@ -452,10 +454,35 @@ bool checkIntensity(char *intensity, char *maxBrightness, char *actualBrightness
         return false;
     }
 
-    if (intensityD <= 8)
-    {
-        fprintf(stderr, "ERROR: you can't set brightness under or 0%%\n");
-        return false;
+    if (force == false) {
+
+        if (intensityD <= 8)
+        {
+            fprintf(stderr, "ERROR: you can't set brightness under or 0%% (or 8 in file format), try adding the -f flag to force\n");
+            return false;
+        }
+
+    } else {
+
+        #if defined __GNUC__ && !defined __clang__
+        #  pragma GCC diagnostic push
+        #  pragma GCC diagnostic ignored "-Wtype-limits"
+        #elif __clang__
+        #  pragma clang diagnostic push
+        #  pragma clang diagnostic ignored "-Wtype-limits"
+        #endif
+
+        if (intensityD < 0)
+        {
+            #if defined __GNUC__ && !defined __clang__
+            #  pragma GCC diagnostic pop
+            #elif __clang__
+            #  pragma clang diagnostic pop
+            #endif
+
+            fprintf(stderr, "ERROR: you can't set brightness under or 0%%\n");
+            return false;
+        }
     }
 
     if (intensityD > maxBrightnessD)
@@ -482,6 +509,7 @@ resetLabel:
     ReturnArgs.percenteBrightnessWithoutSign = false;
     ReturnArgs.directBrightness = false;
     ReturnArgs.percenteBrightness = false;
+    ReturnArgs.force = false;
 
     if (labelGotoCheck == true) return ReturnArgs;
 
@@ -516,6 +544,9 @@ resetLabel:
             ReturnArgs.intensity = xmalloc(0);
             return ReturnArgs;
 
+        } else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--force") == 0) {
+            ReturnArgs.force = true;
+
         } else if (argv[i][0] == '+') {
 
             size_t len = strlen(argv[i]);
@@ -532,7 +563,7 @@ resetLabel:
                 for (size_t j = 1; j <= len - 2; ++j, ++z) percen[z] = argv[i][j];
 
                 ReturnArgs.intensity = percentage(percen, maxBrightness, actualBrightness, false, true, false);
-                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness, ReturnArgs.force) == false) { labelGotoCheck = true; goto resetLabel; }
             } else {
                 ReturnArgs.directBrightness = true;
                 
@@ -547,7 +578,7 @@ resetLabel:
                 memset(ReturnArgs.intensity, 0, 100);
 
                 sprintf(ReturnArgs.intensity, "%ld", (atol(actualBrightness) + atol(percen)));
-                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness, ReturnArgs.force) == false) { labelGotoCheck = true; goto resetLabel; }
             }
             
 
@@ -566,7 +597,7 @@ resetLabel:
                 for (size_t j = 1; j < len - 1; ++j, ++z) percen[z] = argv[i][j];
 
                 ReturnArgs.intensity = percentage(percen, maxBrightness, actualBrightness, false, false, true);
-                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness, ReturnArgs.force) == false) { labelGotoCheck = true; goto resetLabel; }
             } else {                
                 ReturnArgs.directBrightness = true;
                 
@@ -580,7 +611,7 @@ resetLabel:
                 ReturnArgs.intensity = xmalloc(sizeof(char) * 100);
                 memset(ReturnArgs.intensity, 0, 100);
                 sprintf(ReturnArgs.intensity, "%ld", (atol(actualBrightness) - atol(percen)));
-                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness, ReturnArgs.force) == false) { labelGotoCheck = true; goto resetLabel; }
             }
 
         } else if (argv[i][0] == '0' || argv[i][0] == '1' || argv[i][0] == '2' || argv[i][0] == '3' || argv[i][0] == '4' || argv[i][0] == '5' || argv[i][0] == '6' || argv[i][0] == '7' || argv[i][0] == '8' || argv[i][0] == '9') {
@@ -599,7 +630,7 @@ resetLabel:
                 
 
                 ReturnArgs.intensity = percentage(percen, maxBrightness, actualBrightness, true, false, false);
-                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness, ReturnArgs.force) == false) { labelGotoCheck = true; goto resetLabel; }
 
             } else {
                 ReturnArgs.directBrightnessWithoutSign = true;
@@ -610,7 +641,7 @@ resetLabel:
                 memset(ReturnArgs.intensity, 0, len);
 
                 for (size_t j = 0; j <= len; j++) ReturnArgs.intensity[j] = argv[i][j];
-                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness) == false) { labelGotoCheck = true; goto resetLabel; }
+                if (checkIntensity(ReturnArgs.intensity, maxBrightness, actualBrightness, ReturnArgs.force) == false) { labelGotoCheck = true; goto resetLabel; }
             }
         } else {
             fprintf(stderr, "ERROR: no such option: '%s'\n", argv[i]);
@@ -661,6 +692,7 @@ void printHelp(void)
     fprintf(stdout, "  -v, --version  |   Print the version of this program in stdout\n");
     fprintf(stdout, "  -m, --max      |   Print the max brightness (in a file format) in stdout\n");
     fprintf(stdout, "  -c, --current  |   Print the current brightness (in a file format) in stdout\n");
+    fprintf(stdout, "  -f, --force    |   You can set the brightness to 0%%\n");
     fprintf(stdout, "       +50%%      |   Add 50%% to the current brightness\n");
     fprintf(stdout, "       -50%%      |   Substract 50%% to the current brightness\n");
     fprintf(stdout, "        50%%      |   Set the brightness at 50%%\n");
