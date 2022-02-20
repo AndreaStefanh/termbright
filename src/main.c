@@ -510,6 +510,7 @@ resetLabel:
     ReturnArgs.directBrightness = false;
     ReturnArgs.percenteBrightness = false;
     ReturnArgs.force = false;
+    ReturnArgs.intensity = NULL;
 
     if (labelGotoCheck == true) return ReturnArgs;
 
@@ -546,6 +547,7 @@ resetLabel:
 
         } else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--force") == 0) {
             ReturnArgs.force = true;
+            ReturnArgs.intensity = (void *) 0xFAEADDE; // Dummy address
 
         } else if (argv[i][0] == '+') {
 
@@ -655,6 +657,18 @@ resetLabel:
     return ReturnArgs;
 }
 
+bool chArgs(Args *args)
+{
+    if (args->intensity == 0xFAEADDE)
+    {
+        args->intensity = xmalloc(0);
+        fprintf(stderr, "ERROR: no argument was passed\n");
+        return false;
+    }
+
+    return true;
+}
+
 void printTheCurrentBrightness(char *actualBrightness, char *maxBrightness)
 {
     char *perc = percentage2(actualBrightness, maxBrightness);
@@ -723,6 +737,7 @@ int main(int argc, char *argv[])
 
 
     Args args = parseArgs(argc, argv, maxBrightness, actualBrightness);
+    if (chArgs(&args) == false) { goto quit; }
 
 
     if (args.printHelp == true) {
@@ -740,7 +755,7 @@ int main(int argc, char *argv[])
     }
 
 
-
+quit:
     free(maxBrightness);
     free(actualBrightness);
     free(args.intensity);
