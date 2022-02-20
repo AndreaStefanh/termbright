@@ -659,7 +659,7 @@ resetLabel:
 
 bool chArgs(Args *args)
 {
-    if (args->intensity == 0xFAEADDE)
+    if (args->intensity == (void *) 0xFAEADDE)
     {
         args->intensity = xmalloc(0);
         fprintf(stderr, "ERROR: no argument was passed\n");
