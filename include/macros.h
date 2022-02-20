@@ -3,7 +3,6 @@
 
 
 #define PATH_BRIGHTNESS "/sys/class/backlight/"
-#define MAX_ARGS 1
 #define VERSION "1.0.2"
 
 
