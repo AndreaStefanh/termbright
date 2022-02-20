@@ -3,7 +3,7 @@
 
 
 #define PATH_BRIGHTNESS "/sys/class/backlight/"
-#define VERSION "1.0.2"
+#define VERSION "1.0.3"
 
 
 #endif /* _MACROS_H */
