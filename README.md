@@ -16,7 +16,7 @@ $ termbright +10%
 
 removes 10% brightness at current brightness
 ```sh
-$ termbright +10%
+$ termbright -10%
 ```
 
 ## Compile
