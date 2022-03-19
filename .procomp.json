@@ -1,0 +1,9 @@
+{
+    "files": [
+        "makefile.py",
+        "src/main.c",
+        "include/macros.h"
+    ],
+
+    "command": "./makefile.py"
+}
