@@ -548,7 +548,6 @@ resetLabel:
 
         } else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--force") == 0) {
             ReturnArgs.force = true;
-            //ReturnArgs.intensity = (void *) 0xFAEADDE; // Dummy address
             ReturnArgs.freeIntensity = false;
 
         } else if (argv[i][0] == '+') {
