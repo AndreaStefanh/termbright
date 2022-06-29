@@ -30,6 +30,7 @@ typedef struct Args {
     bool force;
 
     char *intensity;
+    bool freeIntensity;
 } Args;
 
 
@@ -509,6 +510,8 @@ resetLabel:
     ReturnArgs.percenteBrightness = false;
     ReturnArgs.force = false;
     ReturnArgs.intensity = NULL;
+    ReturnArgs.freeIntensity = true;
+
 
     if (labelGotoCheck == true) return ReturnArgs;
 
@@ -545,7 +548,8 @@ resetLabel:
 
         } else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--force") == 0) {
             ReturnArgs.force = true;
-            ReturnArgs.intensity = (void *) 0xFAEADDE; // Dummy address
+            //ReturnArgs.intensity = (void *) 0xFAEADDE; // Dummy address
+            ReturnArgs.freeIntensity = false;
 
         } else if (argv[i][0] == '+') {
 
@@ -657,7 +661,7 @@ resetLabel:
 
 bool chArgs(Args *args)
 {
-    if (args->intensity == (void *) 0xFAEADDE)
+    if (args->freeIntensity == false)
     {
         args->intensity = xmalloc(0);
         fprintf(stderr, "ERROR: no argument was passed\n");
