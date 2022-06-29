@@ -163,8 +163,6 @@ void *grubBrightness(void *fileName)
                         closedir(tmpDir);
                         exit(EXIT_FAILURE);
                     }
-
-                    free(pathBright);
                     
                     ssize_t errorRead = read(fd, ReturnMaxBrightness, 10);
 
@@ -179,6 +177,7 @@ void *grubBrightness(void *fileName)
                         exit(EXIT_FAILURE);
                     }
 
+                    free(pathBright);
                     close(fd);
                 }
 
@@ -236,8 +235,6 @@ void writeBright(char *intensity)
                         closedir(tmpDir);
                         exit(EXIT_FAILURE);
                     }
-
-                    free(pathBright);
                     
                     ssize_t errorWrite = write(fd, intensity, 10);
 
@@ -252,6 +249,7 @@ void writeBright(char *intensity)
                         exit(EXIT_FAILURE);
                     }
 
+                    free(pathBright);
                     close(fd);
                 }
 
