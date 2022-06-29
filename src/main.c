@@ -486,7 +486,7 @@ bool checkIntensity(char *intensity, char *maxBrightness, char *actualBrightness
 
     if (intensityD > maxBrightnessD)
     {
-        fprintf(stderr, "ERROR: you can't set brightness upper or 100%%\n");
+        fprintf(stderr, "ERROR: you can't set brightness upper 100%%\n");
         return false;
     }
     
